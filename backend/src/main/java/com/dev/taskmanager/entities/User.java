@@ -3,9 +3,7 @@ package com.dev.taskmanager.entities;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "tb_user")
@@ -25,6 +23,9 @@ public class User {
 
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant updatedAt;
+
+    @OneToMany(mappedBy = "user")
+    private List<Task> tasks = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "tb_user_role",
@@ -51,7 +52,7 @@ public class User {
         this.id = id;
     }
 
-    public String getName(String name) {
+    public String getName() {
         return name;
     }
 
@@ -84,6 +85,9 @@ public class User {
         return updatedAt;
     }
 
+    public List<Task> getTasks() {
+        return tasks;
+    }
 
     public Set<Role> getRoles() {
         return roles;

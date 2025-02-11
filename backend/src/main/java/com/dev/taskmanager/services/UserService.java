@@ -10,6 +10,7 @@ import com.dev.taskmanager.repositories.RoleRepository;
 import com.dev.taskmanager.repositories.UserRepository;
 import com.dev.taskmanager.services.exceptions.ResourceNotFoundException;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +56,7 @@ public class UserService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDTO findById(Long id) {
         Optional<User> obj =  userRepository.findById(id);
-        User entity = obj.orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+        User entity = obj.orElseThrow(() -> new ResourceNotFoundException("User not found " + id));
         return new UserDTO(entity);
     }
 
@@ -76,10 +77,16 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserMinDTO update(Long id, UserMinDTO dto) {
-        User entity = userRepository.getReferenceById(id);
-        copyDtoToEntity(dto, entity);
-        entity = userRepository.save(entity);
-        return new UserMinDTO(entity);
+        try {
+            User entity = userRepository.getReferenceById(id);
+            copyDtoToEntity(dto, entity);
+            entity = userRepository.save(entity);
+            return new UserMinDTO(entity);
+        }
+        catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("User not found " + id);
+        }
+
     }
 
     private void copyDtoToEntity(UserMinDTO dto, User entity) {

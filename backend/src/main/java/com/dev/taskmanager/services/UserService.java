@@ -9,6 +9,7 @@ import com.dev.taskmanager.projections.UserDetailsProjection;
 import com.dev.taskmanager.repositories.RoleRepository;
 import com.dev.taskmanager.repositories.UserRepository;
 import com.dev.taskmanager.services.exceptions.ResourceNotFoundException;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,14 @@ public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    private Role defaultRole; // Armazena a ROLE_USER na memória
+
+    @PostConstruct
+    public void init() {
+        defaultRole = roleRepository.findByAuthority("ROLE_USER")
+            .orElseThrow(() -> new RuntimeException("Role ROLE_USER not found!"));
+    }
+
     @Transactional(readOnly = true)
     public Page<UserDTO> findAll(Pageable pageable) {
         Page<User> list = userRepository.findAll(pageable);
@@ -55,9 +64,11 @@ public class UserService implements UserDetailsService {
         User entity = new User();
         copyDtoToEntity(dto, entity);
 
-        Role role = roleRepository.findByAuthority("ROLE_USER").orElseThrow(() -> new ResourceNotFoundException("Role ROLE_USER not found!"));
+        /*Role role = roleRepository.findByAuthority("ROLE_USER").orElseThrow(() -> new ResourceNotFoundException("Role ROLE_USER not found!"));
+        entity.addRole(role);*/
 
-        entity.addRole(role);
+        // Reutiliza a Role carregada previamente, sem acessar o banco
+        entity.addRole(defaultRole);
 
         entity = userRepository.save(entity);
         return new UserMinDTO(entity);

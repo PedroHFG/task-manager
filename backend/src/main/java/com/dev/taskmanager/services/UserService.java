@@ -115,6 +115,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         List<UserDetailsProjection> result = userRepository.searchUserAndRolesByEmail(username);
 
         if (result.isEmpty()) {
@@ -140,9 +141,7 @@ public class UserService implements UserDetailsService {
             String username = jwtPrincipal.getClaim("username");
 
             User user = userRepository.findByEmail(username).get();
-
             return user;
-
         }
         catch (Exception e) {
             throw new UsernameNotFoundException("Email not found");

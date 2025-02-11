@@ -10,12 +10,26 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
+    @EntityGraph(attributePaths = {"user.roles"})
     @Query("""
-            SELECT obj FROM Task obj
-            WHERE obj.user.id = :userId
-            """)
-    Page<Task> searchById(Long userId, Pageable pageable);
+            SELECT t FROM Task t
+            WHERE t.id = :taskId
+            """
+    )
+    Optional<Task> searchById(Long taskId);
+
+    @Query(value = """
+            SELECT * FROM tb_task
+            WHERE user_id = :userId
+            """,
+            nativeQuery = true
+    )
+    Page<Task> searchAllTasksByUserId(Long userId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"user.roles"})
+    Optional<Task> findById(Long id);
 }

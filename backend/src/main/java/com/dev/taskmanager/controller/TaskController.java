@@ -20,6 +20,7 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping
     public ResponseEntity<Page<TaskDTO>> findAll(Pageable pageable) {
         Page<TaskDTO> dto = taskService.findAll(pageable);
@@ -33,7 +34,7 @@ public class TaskController {
         return ResponseEntity.ok(dto);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping
     public ResponseEntity<TaskDTO> insert(@RequestBody TaskDTO dto) {
         dto = taskService.insert(dto);
@@ -42,14 +43,14 @@ public class TaskController {
         return ResponseEntity.created(uri).body(dto);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<TaskDTO> update(@PathVariable Long id, @RequestBody TaskDTO dto) {
         dto = taskService.update(id, dto);
         return ResponseEntity.ok(dto);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<TaskDTO> delete(@PathVariable Long id) {
         taskService.delete(id);

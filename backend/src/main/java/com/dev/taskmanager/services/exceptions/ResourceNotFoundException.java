@@ -1,4 +1,4 @@
-package com.dev.taskmanager.services.exception;
+package com.dev.taskmanager.services.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
 

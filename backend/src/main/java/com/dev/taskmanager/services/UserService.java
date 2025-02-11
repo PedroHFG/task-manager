@@ -8,15 +8,18 @@ import com.dev.taskmanager.entities.User;
 import com.dev.taskmanager.projections.UserDetailsProjection;
 import com.dev.taskmanager.repositories.RoleRepository;
 import com.dev.taskmanager.repositories.UserRepository;
-import com.dev.taskmanager.services.exception.ResourceNotFoundException;
+import com.dev.taskmanager.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +63,14 @@ public class UserService implements UserDetailsService {
         return new UserMinDTO(entity);
     }
 
+    @Transactional
+    public UserMinDTO update(Long id, UserMinDTO dto) {
+        User entity = userRepository.getReferenceById(id);
+        copyDtoToEntity(dto, entity);
+        entity = userRepository.save(entity);
+        return new UserMinDTO(entity);
+    }
+
     private void copyDtoToEntity(UserMinDTO dto, User entity) {
         entity.setName(dto.getName());
         entity.setEmail(dto.getEmail());
@@ -86,4 +97,20 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
+    protected User authenticated() {
+
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
+            String username = jwtPrincipal.getClaim("username");
+
+            User user = userRepository.findByEmail(username).get();
+
+            return user;
+
+        }
+        catch (Exception e) {
+            throw new UsernameNotFoundException("Email not found");
+        }
+    }
 }

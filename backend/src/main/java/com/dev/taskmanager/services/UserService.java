@@ -147,4 +147,10 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("Email not found");
         }
     }
+
+    @Transactional(readOnly = true)
+    public UserDTO getMe() {
+        User user = authenticated();
+        return new UserDTO(user);
+    }
 }

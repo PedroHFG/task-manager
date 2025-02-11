@@ -8,10 +8,12 @@ import com.dev.taskmanager.entities.User;
 import com.dev.taskmanager.projections.UserDetailsProjection;
 import com.dev.taskmanager.repositories.RoleRepository;
 import com.dev.taskmanager.repositories.UserRepository;
+import com.dev.taskmanager.services.exceptions.DatabaseException;
 import com.dev.taskmanager.services.exceptions.ResourceNotFoundException;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -87,6 +90,20 @@ public class UserService implements UserDetailsService {
             throw new ResourceNotFoundException("User not found " + id);
         }
 
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void delete(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found " + id);
+        }
+
+        try {
+            userRepository.deleteById(id);
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new DatabaseException("Referential integrity failure!");
+        }
     }
 
     private void copyDtoToEntity(UserMinDTO dto, User entity) {

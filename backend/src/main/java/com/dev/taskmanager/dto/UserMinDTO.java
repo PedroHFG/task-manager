@@ -1,42 +1,30 @@
 package com.dev.taskmanager.dto;
 
 import com.dev.taskmanager.entities.User;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserMinDTO {
 
     private Long id;
     private String name;
     private String email;
-	private Instant createdAt;
-	private Instant updatedAt;
-    private List<String> roles = new ArrayList<>();
+    private String password;
 
     public UserMinDTO() {
 
     }
 
-    public UserMinDTO(Long id, String name, String email, Instant createdAt, Instant updatedAt) {
+    public UserMinDTO(Long id, String name, String email, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.password = password;
     }
 
     public UserMinDTO(User entity) {
         this.id = entity.getId();
         this.name = entity.getName();
         this.email = entity.getEmail();
-        this.createdAt = entity.getCreatedAt();
-        this.updatedAt = entity.getUpdatedAt();
-        for (GrantedAuthority role : entity.getRoles()) {
-            roles.add(role.getAuthority());
-        }
+        this.password = entity.getPassword();
     }
 
     public Long getId() {
@@ -63,27 +51,11 @@ public class UserMinDTO {
         this.email = email;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
+    public String getPassword() {
+        return password;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

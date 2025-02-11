@@ -6,6 +6,7 @@ import com.dev.taskmanager.entities.TaskStatus;
 import com.dev.taskmanager.entities.User;
 import com.dev.taskmanager.repositories.TaskRepository;
 import com.dev.taskmanager.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +54,21 @@ public class TaskService {
 
         entity = taskRepository.save(entity);
         return new TaskDTO(entity);
+    }
+
+    @Transactional
+    public TaskDTO update(Long id, TaskDTO dto) {
+        try {
+            Task entity = taskRepository.getReferenceById(id);
+            authService.validateSelfOrAdmin(entity.getUser().getId());
+            copyDtoToEntity(dto, entity);
+            entity = taskRepository.save(entity);
+            return new TaskDTO(entity);
+        }
+        catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Task not found " + id);
+        }
+
     }
 
     private void copyDtoToEntity(TaskDTO dto, Task entity) {

@@ -3,6 +3,9 @@ package com.dev.taskmanager.repositories;
 import com.dev.taskmanager.entities.User;
 import com.dev.taskmanager.projections.UserDetailsProjection;
 import com.dev.taskmanager.projections.UserProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -29,4 +32,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<UserProjection> searchUserAndRoles();
 
 	Optional<User> findByEmail(String email);
+
+	//@EntityGraph garante uma única query. Evita degradação no banco de dados.
+	@EntityGraph(attributePaths = "roles")
+	Page<User> findAll(Pageable pageable);
+
+	@EntityGraph(attributePaths = "roles")
+	Optional<User> findById(Long id);
 }

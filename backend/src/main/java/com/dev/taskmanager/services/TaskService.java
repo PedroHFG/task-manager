@@ -5,8 +5,10 @@ import com.dev.taskmanager.entities.Task;
 import com.dev.taskmanager.entities.TaskStatus;
 import com.dev.taskmanager.entities.User;
 import com.dev.taskmanager.repositories.TaskRepository;
+import com.dev.taskmanager.services.exceptions.DatabaseException;
 import com.dev.taskmanager.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -68,7 +70,20 @@ public class TaskService {
         catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Task not found " + id);
         }
+    }
 
+    @Transactional
+    public void delete(Long id) {
+        Task task = taskRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Task not found " + id));
+        authService.validateSelfOrAdmin(task.getUser().getId());
+
+        try {
+            taskRepository.deleteById(id);
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new DatabaseException("Referential integrity failure!");
+        }
     }
 
     private void copyDtoToEntity(TaskDTO dto, Task entity) {

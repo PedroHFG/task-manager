@@ -1,4 +1,24 @@
 /* Estilo para os cards */
+
+/* Estilo para a navbar */
+.navbar {
+  padding: 0.5rem 1rem; /* Ajusta o padding da navbar */
+}
+
+/* Estilo para os inputs e botões */
+.form-control-sm {
+  height: 38px; /* Ajusta a altura dos inputs */
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem; /* Ajusta o padding dos botões */
+}
+
+/* Ajusta o espaçamento entre os elementos */
+.input-group {
+  margin-right: 0.5rem; /* Espaçamento entre os inputs de data */
+}
+
 .card:hover {
   transform: scale(1.05); /* Aumenta o tamanho em 5% */
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra mais forte */

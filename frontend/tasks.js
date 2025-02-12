@@ -7,9 +7,39 @@ document.addEventListener("DOMContentLoaded", async function () {
   if (!token || token === "undefined") {
     alert("Usuário não autenticado. Faça login novamente.");
     localStorage.removeItem("token");
+    localStorage.removeItem("username"); // Remove o nome do usuário se não estiver autenticado
     window.location.href = "login.html";
     return;
   }
+
+  // Função para buscar o usuário logado
+  async function fetchLoggedUser() {
+    try {
+      const response = await fetch("http://localhost:8080/users/me", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        // Atualiza o nome do usuário na navbar
+        document.getElementById(
+          "usernameDisplay"
+        ).textContent = `${userData.name}'s To-Do List`; // Supondo que o nome do usuário esteja na propriedade 'name'
+      } else {
+        alert("Erro ao buscar dados do usuário.");
+      }
+    } catch (error) {
+      console.error("Erro ao buscar dados do usuário:", error);
+      alert("Erro inesperado. Tente novamente mais tarde.");
+    }
+  }
+
+  // Chama a função para buscar o usuário logado
+  fetchLoggedUser();
 
   // Função para buscar tarefas
   async function fetchTasks(page = 0) {
@@ -191,7 +221,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     document.body.classList.add("modal-open");
   }
 
-  // Fechar o modal
+  // Fechar o modal de editar tarefa
   document.getElementById("closeModal").addEventListener("click", () => {
     const modal = document.getElementById("editTaskModal");
     modal.classList.remove("show", "fade");
@@ -239,6 +269,20 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     });
 
+  // Abrir o modal de adicionar tarefa
+  document.getElementById("openAddModal").addEventListener("click", () => {
+    const modal = document.getElementById("addTaskModal");
+    modal.classList.add("show", "fade");
+    document.body.classList.add("modal-open");
+  });
+
+  // Fechar o modal de adicionar tarefa
+  document.getElementById("closeAddModal").addEventListener("click", () => {
+    const modal = document.getElementById("addTaskModal");
+    modal.classList.remove("show", "fade");
+    document.body.classList.remove("modal-open");
+  });
+
   // Função para adicionar nova tarefa
   async function addTask(task) {
     try {
@@ -255,11 +299,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         alert("Tarefa adicionada com sucesso!");
         fetchTasks(currentPage); // Atualiza a lista de tarefas
 
-        // Contrai o componente collapse
-        const collapseElement = document.getElementById("collapseForm");
-        const collapse = new bootstrap.Collapse(collapseElement, {
-          toggle: true, // Isso contrai o componente
-        });
+        const modal = document.getElementById("addTaskModal");
+        modal.classList.remove("show", "fade");
+        document.body.classList.remove("modal-open");
       } else {
         alert("Erro ao adicionar tarefa. Verifique os dados.");
       }

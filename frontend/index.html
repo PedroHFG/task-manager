@@ -16,7 +16,126 @@
   </head>
   <body class="bg-light">
     <div class="container mt-5">
-      <!-- Modal -->
+      <!-- Navbar com Filtros -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#" id="usernameDisplay"
+            >Minhas Tarefas</a
+          >
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <form class="d-flex ms-auto">
+              <input
+                class="form-control form-control-sm me-2"
+                type="search"
+                placeholder="Filtrar pelo título"
+                aria-label="Filtrar pelo título"
+                id="filterTitle"
+              />
+              <div class="input-group me-2">
+                <input
+                  type="date"
+                  class="form-control form-control-sm"
+                  id="filterStartDate"
+                  aria-label="Data de Início"
+                />
+                <input
+                  type="date"
+                  class="form-control form-control-sm"
+                  id="filterEndDate"
+                  aria-label="Data de Fim"
+                />
+              </div>
+              <select
+                class="form-select form-select-sm me-2"
+                id="filterStatus"
+                aria-label="Filtrar pelo status"
+              >
+                <option value="" disabled selected>Selecione o status</option>
+                <option value="PENDING">Pendente</option>
+                <option value="IN_PROGRESS">Em Progresso</option>
+                <option value="COMPLETED">Concluída</option>
+              </select>
+              <button
+                class="btn btn-outline-success btn-sm form-control-sm"
+                type="button"
+                id="applyFilters"
+              >
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+              <button
+                class="btn btn-outline-danger btn-sm ms-2"
+                type="button"
+                id="logoutButton"
+              >
+                Logout
+              </button>
+            </form>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Modal Adicionar Tarefa -->
+      <div id="addTaskModal" class="modal-container hidden">
+        <div class="modal-content">
+          <h5>Adicionar Nova Tarefa</h5>
+          <form id="taskForm">
+            <div class="mb-3">
+              <label for="taskTitle" class="form-label">Título:</label>
+              <input type="text" class="form-control" id="taskTitle" required />
+            </div>
+            <div class="mb-3">
+              <label for="taskDescription" class="form-label">Descrição:</label>
+              <textarea
+                class="form-control"
+                id="taskDescription"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="taskDueDate" class="form-label">Data Limite:</label>
+              <input
+                type="date"
+                class="form-control"
+                id="taskDueDate"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="taskStatus" class="form-label">Status:</label>
+              <select class="form-select" id="taskStatus" required>
+                <option value="" disabled selected>Selecione o status</option>
+                <option value="PENDING">Pendente</option>
+                <option value="IN_PROGRESS">Em Progresso</option>
+                <option value="COMPLETED">Concluída</option>
+              </select>
+            </div>
+            <div class="text-end">
+              <button
+                type="button"
+                id="closeAddModal"
+                class="btn btn-secondary"
+              >
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary">Adicionar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal Editar Tarefa -->
       <div id="editTaskModal" class="modal-container hidden">
         <div class="modal-content">
           <h5>Editar Tarefa</h5>
@@ -69,59 +188,12 @@
         </div>
       </div>
 
-      <!-- Componente Collapse -->
+      <!-- Botão para abrir o modal de Adicionar Tarefa -->
       <p>
-        <a
-          class="btn btn-primary"
-          data-bs-toggle="collapse"
-          href="#collapseForm"
-          role="button"
-          aria-expanded="false"
-          aria-controls="collapseForm"
-        >
+        <button id="openAddModal" class="btn btn-primary">
           Adicionar Nova Tarefa
-        </a>
+        </button>
       </p>
-      <div class="collapse" id="collapseForm">
-        <div class="card card-body">
-          <form id="taskForm">
-            <div class="mb-3">
-              <label for="taskTitle" class="form-label">Título:</label>
-              <input type="text" class="form-control" id="taskTitle" required />
-            </div>
-            <div class="mb-3">
-              <label for="taskDescription" class="form-label">Descrição:</label>
-              <textarea
-                class="form-control"
-                id="taskDescription"
-                rows="3"
-                required
-              ></textarea>
-            </div>
-            <div class="mb-3">
-              <label for="taskDueDate" class="form-label">Data Limite:</label>
-              <input
-                type="date"
-                class="form-control"
-                id="taskDueDate"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label for="taskStatus" class="form-label">Status:</label>
-              <select class="form-select" id="taskStatus" required>
-                <option value="" disabled selected>Selecione o status</option>
-                <option value="PENDING">Pendente</option>
-                <option value="IN_PROGRESS">Em Progresso</option>
-                <option value="COMPLETED">Concluída</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-primary">
-              Adicionar Tarefa
-            </button>
-          </form>
-        </div>
-      </div>
 
       <div class="row mt-3" id="taskContainer">
         <!-- Os cards das tarefas serão inseridos aqui -->

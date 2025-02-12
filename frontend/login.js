@@ -45,3 +45,15 @@ document
       alert("Erro inesperado. Tente novamente mais tarde.");
     }
   });
+
+async function getUserLogged(token) {
+  const response = await fetch(`http://localhost:8080//users/me`, {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + token,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response;
+}

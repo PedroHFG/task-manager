@@ -6,12 +6,14 @@ INSERT INTO tb_role (authority) VALUES ('ROLE_ADMIN');
 INSERT INTO tb_user (name, email, password, created_At) VALUES ('John Doe', 'john@example.com', '$2a$10$IjdE3RH0y77VCOKjB/JIPOZiEVALzatHsTd1qSnoaFJc22iMtH8Ay', NOW());
 INSERT INTO tb_user (name, email, password, created_At) VALUES ('Jane Smith', 'jane@example.com', '$2a$10$IjdE3RH0y77VCOKjB/JIPOZiEVALzatHsTd1qSnoaFJc22iMtH8Ay', NOW());
 INSERT INTO tb_user (name, email, password, created_At) VALUES ('Alice Brown', 'alice@example.com', '$2a$10$IjdE3RH0y77VCOKjB/JIPOZiEVALzatHsTd1qSnoaFJc22iMtH8Ay', NOW());
+INSERT INTO tb_user (name, email, password, created_At) VALUES ('Pedro Henrique', 'pedro@example.com', '$2a$10$IjdE3RH0y77VCOKjB/JIPOZiEVALzatHsTd1qSnoaFJc22iMtH8Ay', NOW());
 
 -- Insert associação tb_user e tb_role
 INSERT INTO tb_user_role (user_id, role_id) VALUES (1, 1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2, 1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2, 2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (3, 1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (4, 1);
 
 -- Inserir Tasks
 INSERT INTO tb_task (title, description, status, due_date, user_id, created_At) VALUES ('Finalizar relatório de vendas', 'Elaborar relatório financeiro com dados de vendas do último trimestre.', 0, '2024-12-20', 3, NOW());

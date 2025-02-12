@@ -67,7 +67,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     task.id
                                   }"><i class="fas fa-check"></i></button>
                                   <button class="btn btn-primary btn-sm me-2"><i class="fas fa-edit"></i></button>
-                                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                  <button class="btn btn-danger btn-sm mark-deleted" data-id="${
+                                    task.id
+                                  }"><i class="fas fa-trash"></i></button>
                               </div>
                           </div>
                       </div>
@@ -79,6 +81,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         const completedButtons = document.querySelectorAll(".mark-completed");
         completedButtons.forEach((button) => {
           button.addEventListener("click", markAsCompleted);
+        });
+
+        // Após a criação dos cards, adicione o evento de clique para os botões de marcar como concluído
+        const deletedButtons = document.querySelectorAll(".mark-deleted");
+        deletedButtons.forEach((button) => {
+          button.addEventListener("click", markAsDeleted);
         });
 
         // Atualiza o estado dos botões de paginação
@@ -94,6 +102,30 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     } catch (error) {
       console.error("Erro ao buscar tarefas:", error);
+      alert("Erro inesperado. Tente novamente mais tarde.");
+    }
+  }
+
+  async function markAsDeleted(event) {
+    const taskId = event.target.closest("button").dataset.id; // Obtém o ID da tarefa
+
+    try {
+      const response = await fetch(`http://localhost:8080/tasks/${taskId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        alert("Tarefa deletada como concluída!");
+        fetchTasks(currentPage); // Atualiza a lista de tarefas
+      } else {
+        alert("Erro ao deletar tarefa como concluída.");
+      }
+    } catch (error) {
+      console.error("Erro ao deletar tarefa:", error);
       alert("Erro inesperado. Tente novamente mais tarde.");
     }
   }

@@ -33,11 +33,11 @@
         <div class="card card-body">
           <form id="taskForm">
             <div class="mb-3">
-              <label for="taskTitle" class="form-label">Título</label>
+              <label for="taskTitle" class="form-label">Título:</label>
               <input type="text" class="form-control" id="taskTitle" required />
             </div>
             <div class="mb-3">
-              <label for="taskDescription" class="form-label">Descrição</label>
+              <label for="taskDescription" class="form-label">Descrição:</label>
               <textarea
                 class="form-control"
                 id="taskDescription"
@@ -46,13 +46,22 @@
               ></textarea>
             </div>
             <div class="mb-3">
-              <label for="taskDueDate" class="form-label">Data Limite</label>
+              <label for="taskDueDate" class="form-label">Data Limite:</label>
               <input
                 type="date"
                 class="form-control"
                 id="taskDueDate"
                 required
               />
+            </div>
+            <div class="mb-3">
+              <label for="taskStatus" class="form-label">Status:</label>
+              <select class="form-select" id="taskStatus" required>
+                <option value="" disabled selected>Selecione o status</option>
+                <option value="PENDING">Pendente</option>
+                <option value="IN_PROGRESS">Em Progresso</option>
+                <option value="COMPLETED">Concluída</option>
+              </select>
             </div>
             <button type="submit" class="btn btn-primary">
               Adicionar Tarefa

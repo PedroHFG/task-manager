@@ -1,6 +1,7 @@
 package com.dev.taskmanager.controller;
 
 import com.dev.taskmanager.dto.TaskDTO;
+import com.dev.taskmanager.dto.TaskMinDTO;
 import com.dev.taskmanager.services.TaskService;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/tasks")
@@ -48,6 +50,13 @@ public class TaskController {
     public ResponseEntity<TaskDTO> update(@PathVariable Long id, @RequestBody TaskDTO dto) {
         dto = taskService.update(id, dto);
         return ResponseEntity.ok(dto);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<TaskDTO> updateStatus(@PathVariable Long id, @RequestBody TaskMinDTO dto) {
+        TaskDTO updatedTask = taskService.updateStatus(id, dto);
+        return ResponseEntity.ok(updatedTask);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")

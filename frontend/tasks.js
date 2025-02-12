@@ -63,7 +63,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                                   : "-"
                               }</p>
                               <div class="d-flex justify-content-end">
-                                  <button class="btn btn-success btn-sm me-2"><i class="fas fa-check"></i></button>
+                                  <button class="btn btn-success btn-sm me-2 mark-completed" data-id="${
+                                    task.id
+                                  }"><i class="fas fa-check"></i></button>
                                   <button class="btn btn-primary btn-sm me-2"><i class="fas fa-edit"></i></button>
                                   <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                               </div>
@@ -71,6 +73,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                       </div>
                   `;
           taskContainer.appendChild(card);
+        });
+
+        // Após a criação dos cards, adicione o evento de clique para os botões de marcar como concluído
+        const completedButtons = document.querySelectorAll(".mark-completed");
+        completedButtons.forEach((button) => {
+          button.addEventListener("click", markAsCompleted);
         });
 
         // Atualiza o estado dos botões de paginação
@@ -90,6 +98,36 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
+  // Função para marcar tarefa como concluída
+  async function markAsCompleted(event) {
+    const taskId = event.target.closest("button").dataset.id; // Obtém o ID da tarefa
+
+    const updatedTask = {
+      status: "COMPLETED",
+    }; // Apenas atualiza o status
+
+    try {
+      const response = await fetch(`http://localhost:8080/tasks/${taskId}`, {
+        method: "PATCH", // Ou "PATCH", dependendo da sua API
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTask), // O corpo deve ser passado aqui
+      });
+
+      if (response.ok) {
+        alert("Tarefa marcada como concluída!");
+        fetchTasks(currentPage); // Atualiza a lista de tarefas
+      } else {
+        alert("Erro ao marcar tarefa como concluída.");
+      }
+    } catch (error) {
+      console.error("Erro ao marcar tarefa como concluída:", error);
+      alert("Erro inesperado. Tente novamente mais tarde.");
+    }
+  }
+
   // Função para adicionar nova tarefa
   async function addTask(task) {
     try {
@@ -105,6 +143,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (response.ok) {
         alert("Tarefa adicionada com sucesso!");
         fetchTasks(currentPage); // Atualiza a lista de tarefas
+
+        // Contrai o componente collapse
+        const collapseElement = document.getElementById("collapseForm");
+        const collapse = new bootstrap.Collapse(collapseElement, {
+          toggle: true, // Isso contrai o componente
+        });
       } else {
         alert("Erro ao adicionar tarefa. Verifique os dados.");
       }
@@ -123,6 +167,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       title: document.getElementById("taskTitle").value,
       description: document.getElementById("taskDescription").value,
       dueDate: document.getElementById("taskDueDate").value,
+      status: document.getElementById("taskStatus").value,
     };
 
     addTask(task); // Chama a função para adicionar a tarefa

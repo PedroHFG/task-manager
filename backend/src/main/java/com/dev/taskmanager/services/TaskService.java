@@ -1,6 +1,7 @@
 package com.dev.taskmanager.services;
 
 import com.dev.taskmanager.dto.TaskDTO;
+import com.dev.taskmanager.dto.TaskMinDTO;
 import com.dev.taskmanager.entities.Task;
 import com.dev.taskmanager.entities.TaskStatus;
 import com.dev.taskmanager.entities.User;
@@ -49,7 +50,7 @@ public class TaskService {
     public TaskDTO insert(TaskDTO dto) {
         Task entity = new Task();
         copyDtoToEntity(dto, entity);
-        entity.setStatus(TaskStatus.PENDING);
+        //entity.setStatus(TaskStatus.PENDING);
 
         User user =userService.authenticated();
         entity.setUser(user);
@@ -71,6 +72,29 @@ public class TaskService {
             throw new ResourceNotFoundException("Task not found " + id);
         }
     }
+
+    @Transactional
+    public TaskDTO updateStatus(Long id, TaskMinDTO dto) {
+        try {
+            Task entity = taskRepository.getReferenceById(id);
+            authService.validateSelfOrAdmin(entity.getUser().getId());
+
+            // Atualiza apenas o status
+            if (dto.getStatus() != null) {
+                entity.setStatus(dto.getStatus());
+            }
+
+            // Salva e retorna o DTO atualizado
+            entity = taskRepository.save(entity);
+            return new TaskDTO(entity);
+        }
+        catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Task not found " + id);
+        }
+
+    }
+
+
 
     @Transactional
     public void delete(Long id) {

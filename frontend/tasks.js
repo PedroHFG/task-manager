@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const token = localStorage.getItem("token");
   let currentPage = 0; // Página atual
   let totalPages = 0; // Total de páginas
+  let currentTaskId = null; // ID da tarefa sendo editada
 
   if (!token || token === "undefined") {
     alert("Usuário não autenticado. Faça login novamente.");
@@ -49,9 +50,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                               <span class="badge ${badgeClass} text-white">${
             task.status
           }</span>
-                              <p class="mt-2"><strong>Data Limite:</strong> ${new Date(
+                              <p class="mt-2"><strong>Data Limite:</strong> <span class="due-date">${new Date(
                                 task.dueDate
-                              ).toLocaleDateString()}</p>
+                              ).toLocaleDateString()}</span></p>
                               <p class="text-muted small">Criado em: ${new Date(
                                 task.createdAt
                               ).toLocaleDateString()}</p>
@@ -66,7 +67,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                                   <button class="btn btn-success btn-sm me-2 mark-completed" data-id="${
                                     task.id
                                   }"><i class="fas fa-check"></i></button>
-                                  <button class="btn btn-primary btn-sm me-2"><i class="fas fa-edit"></i></button>
+                                  <button class="btn btn-primary btn-sm me-2 edit-task" data-id="${
+                                    task.id
+                                  }"><i class="fas fa-edit"></i></button>
                                   <button class="btn btn-danger btn-sm mark-deleted" data-id="${
                                     task.id
                                   }"><i class="fas fa-trash"></i></button>
@@ -77,16 +80,20 @@ document.addEventListener("DOMContentLoaded", async function () {
           taskContainer.appendChild(card);
         });
 
-        // Após a criação dos cards, adicione o evento de clique para os botões de marcar como concluído
+        // Adiciona eventos ao botão de ação
         const completedButtons = document.querySelectorAll(".mark-completed");
         completedButtons.forEach((button) => {
           button.addEventListener("click", markAsCompleted);
         });
 
-        // Após a criação dos cards, adicione o evento de clique para os botões de marcar como concluído
         const deletedButtons = document.querySelectorAll(".mark-deleted");
         deletedButtons.forEach((button) => {
           button.addEventListener("click", markAsDeleted);
+        });
+
+        const editButtons = document.querySelectorAll(".edit-task");
+        editButtons.forEach((button) => {
+          button.addEventListener("click", openEditModal);
         });
 
         // Atualiza o estado dos botões de paginação
@@ -159,6 +166,78 @@ document.addEventListener("DOMContentLoaded", async function () {
       alert("Erro inesperado. Tente novamente mais tarde.");
     }
   }
+
+  // Abrir o modal para edição
+  function openEditModal(event) {
+    const taskId = event.target.closest("button").dataset.id;
+    currentTaskId = taskId;
+
+    const taskCard = event.target.closest(".card-body");
+
+    document.getElementById("editTaskTitle").value =
+      taskCard.querySelector(".card-title").textContent;
+
+    document.getElementById("editTaskDescription").value =
+      taskCard.querySelector(".card-text").textContent;
+
+    document.getElementById("editTaskDueDate").value =
+      taskCard.querySelector(".due-date").textContent;
+
+    document.getElementById("editTaskStatus").value =
+      taskCard.querySelector(".badge").textContent;
+
+    const modal = document.getElementById("editTaskModal");
+    modal.classList.add("show", "fade");
+    document.body.classList.add("modal-open");
+  }
+
+  // Fechar o modal
+  document.getElementById("closeModal").addEventListener("click", () => {
+    const modal = document.getElementById("editTaskModal");
+    modal.classList.remove("show", "fade");
+    document.body.classList.remove("modal-open");
+  });
+
+  document
+    .getElementById("editTaskForm")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const updatedTask = {
+        title: document.getElementById("editTaskTitle").value,
+        description: document.getElementById("editTaskDescription").value,
+        dueDate: document.getElementById("editTaskDueDate").value,
+        status: document.getElementById("editTaskStatus").value,
+      };
+
+      try {
+        const response = await fetch(
+          `http://localhost:8080/tasks/${currentTaskId}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: "Bearer " + token,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedTask),
+          }
+        );
+
+        if (response.ok) {
+          alert("Tarefa atualizada com sucesso!");
+          fetchTasks(currentPage);
+
+          const modal = document.getElementById("editTaskModal");
+          modal.classList.remove("show", "fade");
+          document.body.classList.remove("modal-open");
+        } else {
+          alert("Erro ao atualizar tarefa.");
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar tarefa:", error);
+        alert("Erro inesperado. Tente novamente mais tarde.");
+      }
+    });
 
   // Função para adicionar nova tarefa
   async function addTask(task) {

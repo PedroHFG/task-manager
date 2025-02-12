@@ -4,3 +4,49 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra mais forte */
   transition: transform 0.3s ease, box-shadow 0.3s ease; /* Suaviza a transição */
 }
+
+/* Estilo base do modal */
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px); /* Efeito fosco */
+  z-index: 1050;
+  opacity: 0; /* Inicialmente invisível */
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Modal visível */
+.modal-container.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Conteúdo do modal */
+.modal-content {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+
+/* Animação de abertura */
+.modal-container.show .modal-content {
+  transform: scale(1); /* Expande suavemente */
+}
+
+/* Ocultar scroll do corpo quando o modal estiver aberto */
+body.modal-open {
+  overflow: hidden;
+}

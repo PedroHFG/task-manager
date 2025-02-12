@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           card.innerHTML = `
                       <div class="card shadow-sm border-0 h-100">
                           <div class="card-body">
-                              <h5 class="card-title">${task.title}</h5>
+                              <h6 class="card-title">${task.title}</h6>
                               <p class="card-text">${task.description}</p>
                               <span class="badge ${badgeClass} text-white">${
             task.status
